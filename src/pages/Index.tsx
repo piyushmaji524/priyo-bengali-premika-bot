@@ -81,7 +81,7 @@ const Index = () => {
         <div className="container py-4 flex items-center justify-center">
           <div className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-lover-DEFAULT animate-heart-beat" />
-            <h1 className="text-xl md:text-2xl font-bold bengali-text text-foreground">প্রিয় প্রেমিকা</h1>
+            <h1 className="text-xl md:text-2xl font-bold bengali-text text-foreground">প্রিয়তমা</h1>
           </div>
         </div>
       </header>
