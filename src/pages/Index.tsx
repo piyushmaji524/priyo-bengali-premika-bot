@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Copyright } from 'lucide-react';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
 import FloatingHearts from '@/components/FloatingHearts';
 import { sendMessageToGemini } from '@/services/chatService';
+
 interface Message {
   content: string;
   isUser: boolean;
   timestamp: Date;
 }
+
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initial greeting from the bot
   useEffect(() => {
     const initialGreeting = {
       content: 'হ্যালো প্রিয়তম! আমি শ্রাবন্তী। তোমার সাথে কথা বলতে পেরে খুব খুশি! তোমার দিনটা কেমন কাটছে?',
@@ -24,16 +25,13 @@ const Index = () => {
     setMessages([initialGreeting]);
   }, []);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth'
     });
   }, [messages]);
 
-  // Handle sending a message
   const handleSendMessage = async (message: string) => {
-    // Add user message to the chat
     const userMessage = {
       content: message,
       isUser: true,
@@ -42,24 +40,20 @@ const Index = () => {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
     try {
-      // Prepare messages for API in the format it expects
       const apiMessages = messages.map(msg => ({
         content: msg.content,
         role: msg.isUser ? 'user' as const : 'assistant' as const,
         timestamp: msg.timestamp
       }));
 
-      // Add the new user message
       apiMessages.push({
         content: message,
         role: 'user' as const,
         timestamp: new Date()
       });
 
-      // Get response from API
       const response = await sendMessageToGemini(apiMessages);
 
-      // Add AI response to the chat
       const botMessage = {
         content: response,
         isUser: false,
@@ -72,12 +66,12 @@ const Index = () => {
       setIsLoading(false);
     }
   };
-  return <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Animated background */}
+
+  return (
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
       <FloatingHearts />
       
-      {/* Header */}
-      <header className="fixed top-0 inset-x-0 bg-background/80 backdrop-blur-sm border-b border-primary/20 z-10">
+      <header className="fixed top-0 inset-x-0 bg-background/80 backdrop-blur-sm border-b border-primary/20 z-50 sticky">
         <div className="container py-4 flex items-center justify-center">
           <div className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-lover-DEFAULT animate-heart-beat" />
@@ -86,7 +80,6 @@ const Index = () => {
         </div>
       </header>
       
-      {/* Main chat area */}
       <main className="flex-1 pt-20 pb-24 container max-w-2xl mx-auto">
         <div className="space-y-2 p-4">
           {messages.map((message, index) => <ChatMessage key={index} message={message.content} isUser={message.isUser} timestamp={message.timestamp} />)}
@@ -101,12 +94,25 @@ const Index = () => {
         </div>
       </main>
       
-      {/* Chat input area */}
       <footer className="fixed bottom-0 inset-x-0 bg-background/80 backdrop-blur-sm border-t border-primary/20 p-4 z-10">
         <div className="container max-w-2xl mx-auto">
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
         </div>
       </footer>
-    </div>;
+
+      <div className="fixed bottom-0 inset-x-0 text-center text-xs text-muted-foreground/50 py-1 z-0">
+        <a 
+          href="https://piyushmaji.com" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="flex items-center justify-center gap-1 hover:text-muted-foreground/80 transition-colors"
+        >
+          <Copyright className="h-3 w-3" />
+          <span>Powered by WebSpark | © 2024 All Rights Reserved</span>
+        </a>
+      </div>
+    </div>
+  );
 };
+
 export default Index;
