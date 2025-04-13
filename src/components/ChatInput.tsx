@@ -4,6 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mic, MicOff, Send, Heart } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+
+// Add type definition for Web Speech API
+interface Window {
+  SpeechRecognition: any;
+  webkitSpeechRecognition: any;
+}
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -20,7 +27,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
   // Set up speech recognition
   useEffect(() => {
     // Check if SpeechRecognition is supported
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
     if (SpeechRecognition) {
       setHasVoiceSupport(true);
@@ -128,6 +135,3 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
 };
 
 export default ChatInput;
-
-// Import local utils to fix TypeScript error
-import { cn } from '@/lib/utils';
